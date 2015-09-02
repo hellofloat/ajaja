@@ -66,8 +66,18 @@ module.exports = function( _options, callback ) {
             if ( response.statusCode < 200 || response.statusCode >= 400 ) {
                 var error = {
                     code: response.statusCode,
-                    error: buffer
+                    body: buffer
                 };
+
+                if ( buffer.length ) {
+                    try {
+                        var parsed = JSON.parse( buffer );
+                        error = extend( error, parsed );
+                    }
+                    catch( ex ) {
+                        // do nothing if we can't parse the buffer as JSON
+                    }
+                }
 
                 if ( callback ) {
                     callback( error );
